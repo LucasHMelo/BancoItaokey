@@ -15,7 +15,7 @@ import java.util.Objects;
 public class Cliente {    
     private String nome;
     private String cpf;
-    private String dataNasc;
+    private LocalDate dataNasc;
     private String senha;
     private int idCliente;
 
@@ -35,14 +35,15 @@ public class Cliente {
         this.cpf = cpf;
     }
 
-    public String getDataNasc() {
+    public LocalDate getDataNasc() {
         return dataNasc;
     }
 
-    public void setDataNasc(String dataNasc) {
+    public void setDataNasc(LocalDate dataNasc) {
         this.dataNasc = dataNasc;
     }
 
+    
     public String getSenha() {
         return senha;
     }
