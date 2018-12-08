@@ -33,7 +33,7 @@ public class ClienteDAO {
             try (PreparedStatement pstmt = conexao.prepareStatement(insercao)) {
                 pstmt.setString(1, cliente.getNome());
                 pstmt.setString(2, cliente.getCpf());
-                pstmt.setString(3, cliente.getDataNasc());           
+                pstmt.setDate(3, java.sql.Date.valueOf(cliente.getDataNasc()));           
                 pstmt.setString(4, cliente.getSenha()); 
                 pstmt.setInt(5, cliente.getIdCliente()); 
                 
@@ -63,7 +63,7 @@ public class ClienteDAO {
             try (PreparedStatement pstmt = conexao.prepareStatement(alteracao)) {
                 pstmt.setString(1, cliente.getNome());
                 pstmt.setString(2, cliente.getCpf());
-                pstmt.setString(3, cliente.getDataNasc());  
+                pstmt.setDate(3, java.sql.Date.valueOf(cliente.getDataNasc()));    
                 pstmt.setString(4, cliente.getSenha()); 
                 pstmt.setInt(5, cliente.getIdCliente());
                 int alteracoes = pstmt.executeUpdate();
@@ -118,7 +118,7 @@ public class ClienteDAO {
                         cliente = new Cliente();
                         cliente.setNome(rs.getString(1));
                         cliente.setCpf(rs.getString(2));
-                        cliente.setDataNasc(rs.getString(3));     
+                        cliente.setDataNasc(rs.getDate(3).toLocalDate());     
                         cliente.setSenha(rs.getString(4));   
                         cliente.setIdCliente(rs.getInt(5));
 
@@ -149,7 +149,7 @@ public class ClienteDAO {
                         cliente = new Cliente();
                         cliente.setNome(rs.getString(1));
                         cliente.setCpf(rs.getString(2));
-                        cliente.setDataNasc(rs.getString(3));   
+                        cliente.setDataNasc(rs.getDate(3).toLocalDate());   
                         cliente.setSenha(rs.getString(4)); 
                         cliente.setIdCliente(rs.getInt(5));
                         c.add(cliente);
@@ -271,7 +271,7 @@ public class ClienteDAO {
                         cliente = new Cliente();
                         cliente.setNome(rs.getString(1));
                         cliente.setCpf(rs.getString(2));
-                        cliente.setDataNasc(rs.getString(3));                        
+                        cliente.setDataNasc(rs.getDate(3).toLocalDate());                        
                         cliente.setSenha(rs.getString(4));
                         cliente.setIdCliente(rs.getInt(5));
 

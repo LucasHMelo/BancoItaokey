@@ -5,6 +5,14 @@
  */
 package telas;
 
+import DAO.ClienteDAO;
+import bancoitaokey.Criptografia;
+import java.sql.Connection;
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import model.Cliente;
+
 /**
  *
  * @author Lucas
@@ -14,6 +22,16 @@ public class CRUDCliente extends javax.swing.JFrame {
     /**
      * Creates new form CRUDCliente
      */
+    DefaultTableModel modeloTabela;
+    Connection conexao = Conexao.ConnectionFactory.getConexao();
+    ClienteDAO cDAO = new ClienteDAO(conexao);
+    Cliente c = new Cliente();
+    private List<Cliente> listaClientes;
+    private Cliente cliente = null;
+    private int id = 0;
+    String cpf;
+    Criptografia criptografia = new Criptografia();
+
     public CRUDCliente() {
         initComponents();
         setLocationRelativeTo( null );
@@ -40,10 +58,10 @@ public class CRUDCliente extends javax.swing.JFrame {
         txtNome = new javax.swing.JTextField();
         txtSenha = new javax.swing.JPasswordField();
         txtCpf = new javax.swing.JFormattedTextField();
-        txtRg = new javax.swing.JFormattedTextField();
         jLabel12 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         txtId = new javax.swing.JTextField();
+        txtNiver = new javax.swing.JTextField();
         jButton3 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -112,12 +130,6 @@ public class CRUDCliente extends javax.swing.JFrame {
             ex.printStackTrace();
         }
 
-        try {
-            txtRg.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("##/##/####")));
-        } catch (java.text.ParseException ex) {
-            ex.printStackTrace();
-        }
-
         jLabel12.setText("Senha");
 
         jLabel3.setText("ID");
@@ -145,7 +157,7 @@ public class CRUDCliente extends javax.swing.JFrame {
                     .addComponent(txtId, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel12, javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtRg))
+                    .addComponent(txtNiver))
                 .addContainerGap(58, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -165,8 +177,8 @@ public class CRUDCliente extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel11)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtRg, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(7, 7, 7)
+                .addComponent(txtNiver, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel12)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtSenha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -226,52 +238,157 @@ public class CRUDCliente extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-       /* // TODO add your handling code here:
+        
         int linhaSelecionada = jTable1.getSelectedRow();
         if (linhaSelecionada != -1) {
             int idm = (int) jTable1.getValueAt(jTable1.getSelectedRow(), 0);
-            morador = mDAO.mostrar(idm);
-            mDAO.remover(morador);
+            cliente = cDAO.mostrar(idm);
+            cDAO.remover(cliente);
             this.atualiza();
             this.limpa();
-            JOptionPane.showMessageDialog(this, "Morador removido com sucesso.");
+            JOptionPane.showMessageDialog(this, "Cliente removido com sucesso.");
         } else {
-            JOptionPane.showMessageDialog(null, "Selecione um morador para remover.");
-        }*/
+            JOptionPane.showMessageDialog(null, "Selecione um Cliente para remover.");
+        }
+
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-     /*   // TODO add your handling code here:
-        String senha;
+     String senha;
         senha = new String((txtSenha.getPassword()));
         senha = criptografia.criptografa(8, senha);
-        this.uf = txtUf.getSelectedItem().toString();
-        m.setNome(txtNome.getText());
-        m.setCpf(txtCpf.getText());
-        m.setRg(uf + "-" + txtRg.getText());
-        m.setSenha(senha);
-        m.setnAp(Integer.parseInt(txtNap.getText()));
+        c.setNome(txtNome.getText());
+        c.setCpf(txtCpf.getText());
+      //  c.setDataNasc(txtNiver.getText());
+        c.setSenha(senha);
         if (jTable1.getSelectedRow() != -1) {
             this.alterar();
         } else {
             this.adicionar();
-        }*/
+        }
+
     }//GEN-LAST:event_jButton1ActionPerformed
+        private void msgValidacao() {
+        String dados1 = "";
+        String dados2 = "";
+        if (txtNome.getText().isEmpty()) {
+            dados1 += "\nNome";
+        }
+       /* if (txtCpf.getText().contains(" ") || cpf.isCPF(txtCpf.getText()) == false) {
+            dados1 += "\nCPF";
+        }*/
+        if (txtNiver.getText().contains(" "))
+        {
+            dados1 += "\nNiver";
+        }
+        if (c.getSenha().length() == 0) {
+            dados1 += "\nSenha";
+        }
+        if (dados1 != "") {
+            dados1 = "Os seguintes dados sÃ£o invÃ¡lidos ou nÃ£o foram preenchidos corretamente: " + dados1;
+            JOptionPane.showMessageDialog(this, dados1);
+
+        }
+
+        if (cDAO.checkCpf(txtCpf.getText()) && (jTable1.getSelectedRow() != -1)) {
+            dados2 = "\n\nCPF jÃ¡ cadastrado!";
+
+        }
+
+        if ((dados2 != "") && (jTable1.getSelectedRow() == -1)) {
+            dados2 = "Os seguintes dados jÃ¡ foram cadastrados no sistema: " + dados2;
+            JOptionPane.showMessageDialog(this, dados2);
+
+        }
+        if (c.getSenha().length() < 8 && c.getSenha().length() > 0) {
+            JOptionPane.showMessageDialog(this, "Sua senha Ã© fraca! VocÃª deve usar pelo menos 8 caracteres para sua seguranÃ§a.");
+
+        }
+
+    }
+
+    private void alterar() {
+        String msg = "";
+        String cpf;
+        String niver;
+        Cliente c1 = new Cliente();
+        if (c != null
+                && !txtNome.getText().isEmpty()                
+                && !txtCpf.getText().contains(" ")
+                && !txtNiver.getText().contains(" ")
+                //&& this.cpf.isCPF(txtCpf.getText()) == true                
+                && c.getSenha().length() >= 8
+                ) {
+
+            int id = (int) jTable1.getValueAt(jTable1.getSelectedRow(), 0);
+            c1 = cDAO.mostrar(id);
+            cpf = txtCpf.getText();
+            niver = txtNiver.getText();
+
+            if ((!c1.getCpf().equals(cpf)) && cDAO.checkCpf(txtCpf.getText())) {
+                msg += "\n\nCPF";
+            }
+
+            /*if ((!c1.getDataNasc().equals(niver)) && cDAO.checkRg(txtNiver.getText())) {
+                msg += "\n\nAniversario";
+            }*/
+            if (msg != "") {
+                msg = "Os seguintes dados jÃ¡ estÃ£o cadastrados no sistema: " + msg;
+                JOptionPane.showMessageDialog(this, msg);
+
+            } else {
+                this.alteracao();
+            }
+
+        } else {
+            this.msgValidacao();
+        }
+
+    }
+
+    private void adicionar() {
+
+        if (c != null
+                && !txtNome.getText().isEmpty()
+                && !txtCpf.getText().contains(" ")
+                && !txtNiver.getText().contains(" ")
+               // && this.cpf.isCPF(txtCpf.getText()) == true                
+                && c.getSenha().length() >= 8
+                && !cDAO.checkCpf(txtCpf.getText())
+                //&& !cDAO.checkRg(m.getRg())
+                ) {
+
+            cDAO.inserir(c);
+            this.atualiza();
+            this.limpa();            
+            JOptionPane.showMessageDialog(this, "Cliente adicionado com sucesso.");
+            System.out.println(cDAO.mostrarTodos());
+
+        } else {
+            this.msgValidacao();
+
+        }
+
+    }
+
+    private void alteracao() {
+        
+        int id1 = (int) jTable1.getValueAt(jTable1.getSelectedRow(), 0);
+        c.setIdCliente(id1);
+        cDAO.alterar(c);
+        this.limpa();
+        this.atualiza();
+        JOptionPane.showMessageDialog(this, "Cliente alterado com sucesso.");
+    }
+
 
     private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
-       /* String rg;
-        String n;
-        String uf;
+       String aniversario;
         this.txtId.setText(jTable1.getValueAt(jTable1.getSelectedRow(), 0).toString());
         this.txtNome.setText(jTable1.getValueAt(jTable1.getSelectedRow(), 1).toString());
         this.txtCpf.setText(jTable1.getValueAt(jTable1.getSelectedRow(), 2).toString());
-        rg = jTable1.getValueAt(jTable1.getSelectedRow(), 3).toString();
-        uf = rg.substring(0, 2);
-        n = rg.substring(3, 13);
-        this.txtRg.setText(n);
-        this.txtUf.setSelectedItem(uf);
+        aniversario = jTable1.getValueAt(jTable1.getSelectedRow(), 3).toString();
         this.txtSenha.setText(jTable1.getValueAt(jTable1.getSelectedRow(), 4).toString());
-        this.txtNap.setText(jTable1.getValueAt(jTable1.getSelectedRow(), 5).toString());*/
     }//GEN-LAST:event_jTable1MouseClicked
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
@@ -297,12 +414,22 @@ public class CRUDCliente extends javax.swing.JFrame {
     /**
      * @param args the command line arguments
      */
-    
+    public void atualiza() {
+        List<Cliente> clientes = this.cDAO.mostrarTodos();
+        System.out.println(clientes.toString());
+
+        modeloTabela.setRowCount(0);
+        for (Cliente i : clientes) {
+            this.modeloTabela.addRow(new Object[]{i.getIdCliente(), i.getNome(), i.getCpf(), i.getDataNasc(), i.getSenha()});
+        }
+
+    }
+
     
     private void limpa() {
         this.txtId.setText("");
         this.txtNome.setText("");
-        this.txtRg.setText("");
+        this.txtNiver.setText("");
         this.txtCpf.setText("");
         this.txtSenha.setText("");
     }
@@ -354,8 +481,8 @@ public class CRUDCliente extends javax.swing.JFrame {
     private javax.swing.JTable jTable1;
     private javax.swing.JFormattedTextField txtCpf;
     private javax.swing.JTextField txtId;
+    private javax.swing.JTextField txtNiver;
     private javax.swing.JTextField txtNome;
-    private javax.swing.JFormattedTextField txtRg;
     private javax.swing.JPasswordField txtSenha;
     // End of variables declaration//GEN-END:variables
 }
